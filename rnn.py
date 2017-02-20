@@ -8,6 +8,15 @@ import tensorflow as tf
 from tensorflow.contrib import layers
 
 
+# Constants
+ALPHASIZE = 98 # Width of one hot encoded input elements
+CELLSIZE = 512 # Size of internal layers
+NLAYERS = 5 # Layes of NN
+SEQLEN = 50 # Length of sequence input
+BATCHSIZE = 100 # Batches of inputs
+PKEEP = 1.0 # 1 - dropout prob
+
+
 # Data helper functions
 def load_shapespeare_txt(directory):
     """Load the text given the input directory.  Data pulled from 
@@ -138,7 +147,6 @@ def minibatch_sequencer(data, batch_size, sequence_length):
         yield x_batch, y_batch
 
 
-ALPHASIZE=98
 def sample_from_probabilities(probabilities, topn=ALPHASIZE):
     """Sample a number given a list of probabilities.
 
@@ -159,14 +167,6 @@ def sample_from_probabilities(probabilities, topn=ALPHASIZE):
     p = p / np.sum(p)
     return np.random.choice(ALPHASIZE, 1, p=p)[0]
 
-
-# Constants
-ALPHASIZE = 98 # Width of one hot encoded input elements
-CELLSIZE = 512 # Size of internal layers
-NLAYERS = 3 # Layes of NN
-SEQLEN = 30 # Length of sequence input
-BATCHSIZE = 100 # Batches of inputs
-PKEEP = 0.75 # 1 - dropout prob
 
 # Create placeholders/variables
 batch_size = tf.placeholder(tf.int32)
@@ -251,7 +251,7 @@ for epoch in range(epochs):
             training_cross_entropies.append(training_cross_ent)
 
             # Check the validation accuracy
-            VALID_SEQLEN = 30 # 1024
+            VALID_SEQLEN = 50 # 1024
             VALID_BATCHSIZE = 100 # len(coded_test) / VALID_SEQLEN
             valid_Hin = np.zeros([VALID_BATCHSIZE, CELLSIZE * NLAYERS])
     
