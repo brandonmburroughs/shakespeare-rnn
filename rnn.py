@@ -1,6 +1,7 @@
 import fnmatch
 import os
 import io
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -165,7 +166,7 @@ CELLSIZE = 512 # Size of internal layers
 NLAYERS = 3 # Layes of NN
 SEQLEN = 30 # Length of sequence input
 BATCHSIZE = 100 # Batches of inputs
-PKEEP = 1.0
+PKEEP = 0.75 # 1 - dropout prob
 
 # Create placeholders/variables
 batch_size = tf.placeholder(tf.int32)
@@ -333,25 +334,35 @@ for i in range(100000):
 
 # Save teh generated text
 with open("output/generated_shakespeare.txt", "wb") as out:
-    out.write("{}\n\n".format(epoch, "".join(generated_text)))
+    out.write("{}\n\n".format("".join(generated_text)))
 
 
 # Plot the performance
 plt.figure(figsize=(15, 8))
 plt.subplot(121)
-plt.plot(range(0, 10001, 10), training_accuracies)
-plt.plot(range(0, 10001, 10), test_accuracies)
-plt.ylim(0.94, 1.00)
+plt.plot(
+    range(0, int(math.ceil(num_batches / 100.0) * epochs * BATCHSIZE), BATCHSIZE),
+    training_accuracies
+)
+plt.plot(
+    range(0, int(math.ceil(num_batches / 100.0) * epochs * BATCHSIZE), BATCHSIZE),
+    test_accuracies
+)
 plt.title("Accuracy")
 plt.xlabel("Iterations")
 plt.ylabel("Accuracy")
 plt.legend(["Training Accuracy", "Test Accuracy"], loc="lower right")
 plt.subplot(122)
-plt.plot(range(0, 10001, 10), training_cross_entropies)
-plt.plot(range(0, 10001, 10), test_cross_entropies)
-plt.ylim(0, 20)
-plt.title("Cross Entropy Loss")
+plt.plot(
+    range(0, int(math.ceil(num_batches / 100.0) * epochs * BATCHSIZE), BATCHSIZE),
+    training_cross_entropies
+)
+plt.plot(
+    range(0, int(math.ceil(num_batches / 100.0) * epochs * BATCHSIZE), BATCHSIZE),
+    test_cross_entropies
+)
+plt.title("Mean Cross Entropy Loss")
 plt.xlabel("Iterations")
-plt.ylabel("Cross Entropy")
-plt.legend(["Training Loss", "Test Loss"], loc="upper right")
+plt.ylabel("Mean Cross Entropy")
+plt.legend(["Mean Training Loss", "Mean Test Loss"], loc="upper right")
 plt.savefig("output/rnn.png")
